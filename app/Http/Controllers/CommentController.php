@@ -22,13 +22,13 @@ class CommentController extends Controller
         $data = $this->commentService->getComments($request);
         return response()->json($data);
     }
-    
 
-     public function store(CreateCommentRequest $request)
-     {
-         $validated = $request->validated();
-         $comment = $this->commentService->createComment($validated['post_id'], $validated['content']);
-         return response()->json($comment, 201);
+
+    public function store(CreateCommentRequest $request)
+    {
+        $validated = $request->validated();
+        $comment = $this->commentService->createComment($validated['post_id'], $validated['content']);
+        return response()->json($comment, 201);
      }
 
     public function destroy(DeleteCommentRequest $request)
