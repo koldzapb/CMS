@@ -2,46 +2,33 @@
 
 namespace App\Services;
 
-use App\Models\Post;
-use Illuminate\Http\Request;
+use App\Repositories\PostRepository;
 
-class PostService
+class PostService implements PostServiceInterface
 {
-    protected $filterable = ['id','topic','created_at','updated_at'];
+    protected $repository;
 
-    public function getPosts(Request $request)
+    public function __construct(PostRepository $repository)
     {
-        $query = Post::query();
+        $this->repository = $repository;
+    }
 
-        if ($request->has('comment')) {
-            $commentFilter = $request->get('comment');
-            $query->whereHas('comments', function($q) use ($commentFilter) {
-                $q->where('content', 'LIKE', "%{$commentFilter}%");
-            });
-        }
-
-        foreach ($this->filterable as $field) {
-            if ($request->has($field)) {
-                if ($field === 'id') {
-                    $query->where($field, $request->get($field));
-                } else {
-                    $query->where($field, 'LIKE', '%'.$request->get($field).'%');
-                }
-            }
-        }
-
-        if ($request->has('sort') && in_array($request->sort, $this->filterable)) {
-            $direction = $request->get('direction', 'asc');
-            $query->orderBy($request->sort, $direction);
-        }
-
-        $limit = $request->get('limit', 10);
-        $page = $request->get('page', 1);
+    public function getPosts(
+        array $filters = [], 
+        $sort = null, 
+        $direction = 'asc', 
+        $limit = 10, 
+        $page = 1, 
+        $with = null,
+        $commentFilter = null
+    ) {
+        $query = $this->repository->queryPosts($filters, $sort, $direction, $commentFilter);
 
         $total = $query->count();
-        $posts = $query->skip(($page-1)*$limit)->take($limit)->get();
+        $query = $this->repository->applyPagination($query, $page, $limit);
+        $posts = $query->get();
 
-        if ($request->has('with') && $request->with === 'comments') {
+        if ($with === 'comments') {
             $posts->load('comments');
         }
 
@@ -53,7 +40,7 @@ class PostService
 
     public function deletePost($id)
     {
-        $post = Post::find($id);
+        $post = \App\Models\Post::find($id);
         if (!$post) {
             return false;
         }

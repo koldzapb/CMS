@@ -3,38 +3,32 @@
 namespace App\Services;
 
 use App\Models\Comment;
-use Illuminate\Http\Request;
+use App\Repositories\CommentRepository;
 
-class CommentService
+class CommentService implements CommentServiceInterface
 {
-    protected $filterable = ['id', 'post_id', 'content', 'abbreviation', 'created_at', 'updated_at'];
+    protected $repository;
 
-    public function getComments(Request $request)
+    public function __construct(CommentRepository $repository)
     {
-        $query = Comment::query();
+        $this->repository = $repository;
+    }
 
-        foreach ($this->filterable as $field) {
-            if ($request->has($field)) {
-                if (in_array($field, ['id', 'post_id'])) {
-                    $query->where($field, $request->get($field));
-                } else {
-                    $query->where($field, 'LIKE', '%'.$request->get($field).'%');
-                }
-            }
-        }
-
-        if ($request->has('sort') && in_array($request->get('sort'), $this->filterable)) {
-            $direction = $request->get('direction', 'asc');
-            $query->orderBy($request->get('sort'), $direction);
-        }
-
-        $limit = $request->get('limit', 10);
-        $page = $request->get('page', 1);
-
+    public function getComments(
+        array $filters = [], 
+        $sort = null, 
+        $direction = 'asc', 
+        $limit = 10, 
+        $page = 1, 
+        $with = null
+    ) {
+        $query = $this->repository->queryComments($filters, $sort, $direction);
         $total = $query->count();
-        $comments = $query->skip(($page-1)*$limit)->take($limit)->get();
+        $query = $this->repository->applyPagination($query, $page, $limit);
 
-        if ($request->has('with') && $request->get('with') === 'post') {
+        $comments = $query->get();
+
+        if ($with === 'post') {
             $comments->load('post');
         }
 
@@ -49,7 +43,6 @@ class CommentService
         $content = strtolower($content);
         $words = explode(' ', $content);
         sort($words);
-        
         $abbr = '';
         foreach ($words as $w) {
             $abbr .= $w[0];

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\CommentService;
+use App\Services\CommentServiceInterface;
 use App\Http\Requests\CreateCommentRequest;
 use App\Http\Requests\DeleteCommentRequest;
 
@@ -12,17 +12,30 @@ class CommentController extends Controller
 {
     protected $commentService;
 
-    public function __construct(CommentService $commentService)
+    public function __construct(CommentServiceInterface $commentService)
     {
         $this->commentService = $commentService;
     }
 
     public function index(Request $request)
     {
-        $data = $this->commentService->getComments($request);
+        $filterable = ['id','post_id','content','abbreviation','created_at','updated_at'];
+        $filters = [];
+        foreach ($filterable as $field) {
+            if ($request->has($field)) {
+                $filters[$field] = $request->get($field);
+            }
+        }
+
+        $sort = $request->get('sort');
+        $direction = $request->get('direction', 'asc');
+        $limit = $request->get('limit', 10);
+        $page = $request->get('page', 1);
+        $with = $request->get('with');
+
+        $data = $this->commentService->getComments($filters, $sort, $direction, $limit, $page, $with);
         return response()->json($data);
     }
-
 
     public function store(CreateCommentRequest $request)
     {

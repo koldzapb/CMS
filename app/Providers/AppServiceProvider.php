@@ -13,7 +13,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            \App\Services\PostServiceInterface::class,
+            \App\Services\PostService::class
+        );
+
+        $this->app->bind(
+            \App\Services\CommentServiceInterface::class,
+            \App\Services\CommentService::class
+        );
     }
 
     /**
