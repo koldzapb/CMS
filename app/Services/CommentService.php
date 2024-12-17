@@ -15,7 +15,7 @@ class CommentService implements CommentServiceInterface
         $this->repository = $repository;
     }
 
-    public function getComments(CommentSearchByCriteriaDto $dto)
+    public function getComments(CommentSearchByCriteriaDto $dto): array
     {
         $query = $this->repository->queryComments($dto->filters, $dto->sort, $dto->direction);
         $total = $query->count();
@@ -33,7 +33,7 @@ class CommentService implements CommentServiceInterface
         ];
     }
 
-    public function createComment($postId, $content)
+    public function createComment(int $postId, string $content): Comment
     {
         $content = strtolower($content);
         $words = explode(' ', $content);
@@ -50,7 +50,7 @@ class CommentService implements CommentServiceInterface
         ]);
     }
 
-    public function deleteComment($id)
+    public function deleteComment(int $id): bool
     {
         $comment = Comment::find($id);
         if (!$comment) {

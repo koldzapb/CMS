@@ -7,6 +7,6 @@ use App\Dto\PostSearchByCriteriaDto;
 
 interface PostServiceInterface
 {
-    public function getPosts(PostSearchByCriteriaDto $dto);
-    public function deletePost($id);
+    public function getPosts(PostSearchByCriteriaDto $dto): array;
+    public function deletePost(int $id): bool;
 }

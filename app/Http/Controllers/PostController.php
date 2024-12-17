@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\PostServiceInterface;
 use App\Dto\PostSearchByCriteriaDto;
-
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\DeletePostRequest;
 
 class PostController extends Controller
 {
@@ -16,7 +17,7 @@ class PostController extends Controller
         $this->postService = $postService;
     }
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $filterable = ['id','topic','created_at','updated_at'];
         $filters = [];
@@ -40,14 +41,14 @@ class PostController extends Controller
         return response()->json($data);
     }
 
-    public function destroy(DeletePostRequest $request)
+    public function destroy(DeletePostRequest $request): JsonResponse
     {
         $id = $request->route('id');
 
-        $result = $this->commentService->deleteComment($id);
+        $result = $this->postService->deletePost($id);
 
         if (!$result) {
-            return response()->json(['error' => 'Comment not found'], 404);
+            return response()->json(['error' => 'Post not found'], 404);
         }
 
         return response()->json(true);

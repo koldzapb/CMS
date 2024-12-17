@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Repositories\PostRepository;
 use App\Dto\PostSearchByCriteriaDto;
-
+use App\Models\Post;
 
 class PostService implements PostServiceInterface
 {
@@ -15,7 +15,7 @@ class PostService implements PostServiceInterface
         $this->repository = $repository;
     }
 
-    public function getPosts(PostSearchByCriteriaDto $dto)
+    public function getPosts(PostSearchByCriteriaDto $dto): array
     {
         $query = $this->repository->queryPosts($dto->filters, $dto->sort, $dto->direction, $dto->commentFilter);
 
@@ -34,9 +34,9 @@ class PostService implements PostServiceInterface
         ];
     }
 
-    public function deletePost($id)
+    public function deletePost(int $id): bool
     {
-        $post = \App\Models\Post::find($id);
+        $post = Post::find($id);
         if (!$post) {
             return false;
         }

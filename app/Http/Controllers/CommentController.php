@@ -7,7 +7,7 @@ use App\Services\CommentServiceInterface;
 use App\Http\Requests\CreateCommentRequest;
 use App\Http\Requests\DeleteCommentRequest;
 use App\Dto\CommentSearchByCriteriaDto;
-
+use Illuminate\Http\JsonResponse;
 
 class CommentController extends Controller
 {
@@ -18,7 +18,7 @@ class CommentController extends Controller
         $this->commentService = $commentService;
     }
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $filterable = ['id','post_id','content','abbreviation','created_at','updated_at'];
         $filters = [];
@@ -41,14 +41,14 @@ class CommentController extends Controller
         return response()->json($data);
     }
 
-    public function store(CreateCommentRequest $request)
+    public function store(CreateCommentRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $comment = $this->commentService->createComment($validated['post_id'], $validated['content']);
         return response()->json($comment, 201);
-     }
+    }
 
-    public function destroy(DeleteCommentRequest $request)
+    public function destroy(DeleteCommentRequest $request): JsonResponse
     {
         $id = $request->route('id');
 
