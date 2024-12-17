@@ -26,7 +26,7 @@ class PostController extends Controller
                 $filters[$field] = $request->get($field);
             }
         }
-
+        
         $dto = new PostSearchByCriteriaDto(
             $filters,
             $request->get('sort'),

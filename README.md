@@ -1,64 +1,129 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# CMS Test Project
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a simplified CMS project built with Laravel 8, PHP 8, Composer 2, and MySQL 5.7.  
+The project involves two main entities: **Post** and **Comment**, along with API endpoints for retrieving, creating, and deleting records.  
+It is structured with dedicated layers for Services, Repositories, and DTOs, and includes integrated tests.
 
-## About Laravel
+## Technologies
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8
+- Laravel 8
+- Composer 2
+- MySQL 5.7
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **Clone the repository**:
+   ```bash
+   git clone <REPOSITORY_URL>
+   cd <PROJECT_NAME>
+   ```
 
-## Learning Laravel
+2. **Install PHP dependencies**:
+   ```bash
+   composer install
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. **Copy the environment file**:
+   ```bash
+   cp .env.example .env
+   ```
+   Update the database credentials in `.env` to match your local environment.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. **Generate the application key**:
+   ```bash
+   php artisan key:generate
+   ```
 
-## Laravel Sponsors
+5. **Run migrations and seed the database**:
+   ```bash
+   php artisan migrate --seed
+   ```
+   
+   This will create the `posts` and `comments` tables and populate them with sample data.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Running the Application
 
-### Premium Partners
+Start the local development server:
+```bash
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+By default, it will run at:  
+[http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-## Contributing
+## API Endpoints
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **GET /api/posts**
+  - Retrieves a list of posts with filtering, sorting, pagination, and optional `comment` keyword filtering.
+  - Example:
+    ```bash
+    GET /api/posts?sort=created_at&direction=desc&limit=5&page=1&comment=laughing
+    ```
 
-## Code of Conduct
+- **DELETE /api/posts/{id}**
+  - Deletes a post and its related comments.
+  - Example:
+    ```bash
+    DELETE /api/posts/1
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **GET /api/comments**
+  - Retrieves a list of comments with filtering, sorting, pagination, and optional `post` relation loading.
+  - Example:
+    ```bash
+    GET /api/comments?sort=created_at&direction=asc&with=post
+    ```
 
-## Security Vulnerabilities
+- **POST /api/comments**
+  - Creates a new comment.
+  - Request body:
+    ```json
+    {
+      "post_id": 1,
+      "content": "This is an awesome comment"
+    }
+    ```
+  - Example:
+    ```bash
+    POST /api/comments
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **DELETE /api/comments/{id}**
+  - Deletes a specific comment.
+  - Example:
+    ```bash
+    DELETE /api/comments/1
+    ```
 
-## License
+## Testing
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Tests are divided into `Unit` and `Feature` tests:
+- **Unit tests** focus on business logic in services and repositories, often using mocks.
+- **Feature tests** focus on the API endpoints and may require a test database.
+
+Run the tests:
+```bash
+php artisan test
+```
+or
+```bash
+vendor/bin/phpunit
+```
+
+
+## Code Structure
+
+- `app/Models` - Eloquent models (Post, Comment)
+- `app/Http/Controllers` - Controllers for Post and Comment
+- `app/Services` - Business logic and application services
+- `app/Repositories` - Data access layer (repositories)
+- `app/Dto` - Data Transfer Objects for passing parameters
+- `tests/Unit` - Unit tests (service logic, repository tests)
+- `tests/Feature` - Feature tests (API endpoint tests)
+
+## Additional Notes
+
+- DTO classes (`CommentSearchByCriteriaDto`, `PostSearchByCriteriaDto`) simplify passing parameters to services.
+- The service and repository layers improve code maintainability and testability.
+- Mock-based tests (using Mockery) demonstrate how to test logic in isolation.
