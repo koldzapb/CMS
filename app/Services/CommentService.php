@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Comment;
 use App\Repositories\CommentRepository;
+use App\Dto\CommentSearchByCriteriaDto;
 
 class CommentService implements CommentServiceInterface
 {
@@ -14,21 +15,15 @@ class CommentService implements CommentServiceInterface
         $this->repository = $repository;
     }
 
-    public function getComments(
-        array $filters = [], 
-        $sort = null, 
-        $direction = 'asc', 
-        $limit = 10, 
-        $page = 1, 
-        $with = null
-    ) {
-        $query = $this->repository->queryComments($filters, $sort, $direction);
+    public function getComments(CommentSearchByCriteriaDto $dto)
+    {
+        $query = $this->repository->queryComments($dto->filters, $dto->sort, $dto->direction);
         $total = $query->count();
-        $query = $this->repository->applyPagination($query, $page, $limit);
+        $query = $this->repository->applyPagination($query, $dto->page, $dto->limit);
 
         $comments = $query->get();
 
-        if ($with === 'post') {
+        if ($dto->with === 'post') {
             $comments->load('post');
         }
 

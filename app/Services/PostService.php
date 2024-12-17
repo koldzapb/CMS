@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\PostRepository;
+use App\Dto\PostSearchByCriteriaDto;
+
 
 class PostService implements PostServiceInterface
 {
@@ -13,22 +15,16 @@ class PostService implements PostServiceInterface
         $this->repository = $repository;
     }
 
-    public function getPosts(
-        array $filters = [], 
-        $sort = null, 
-        $direction = 'asc', 
-        $limit = 10, 
-        $page = 1, 
-        $with = null,
-        $commentFilter = null
-    ) {
-        $query = $this->repository->queryPosts($filters, $sort, $direction, $commentFilter);
+    public function getPosts(PostSearchByCriteriaDto $dto)
+    {
+        $query = $this->repository->queryPosts($dto->filters, $dto->sort, $dto->direction, $dto->commentFilter);
 
         $total = $query->count();
-        $query = $this->repository->applyPagination($query, $page, $limit);
+        $query = $this->repository->applyPagination($query, $dto->page, $dto->limit);
+
         $posts = $query->get();
 
-        if ($with === 'comments') {
+        if ($dto->with === 'comments') {
             $posts->load('comments');
         }
 

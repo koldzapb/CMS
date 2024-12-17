@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\CommentServiceInterface;
 use App\Http\Requests\CreateCommentRequest;
 use App\Http\Requests\DeleteCommentRequest;
+use App\Dto\CommentSearchByCriteriaDto;
 
 
 class CommentController extends Controller
@@ -27,13 +28,16 @@ class CommentController extends Controller
             }
         }
 
-        $sort = $request->get('sort');
-        $direction = $request->get('direction', 'asc');
-        $limit = $request->get('limit', 10);
-        $page = $request->get('page', 1);
-        $with = $request->get('with');
+        $dto = new CommentSearchByCriteriaDto(
+            $filters,
+            $request->get('sort'),
+            $request->get('direction', 'asc'),
+            $request->get('limit', 10),
+            $request->get('page', 1),
+            $request->get('with')
+        );
 
-        $data = $this->commentService->getComments($filters, $sort, $direction, $limit, $page, $with);
+        $data = $this->commentService->getComments($dto);
         return response()->json($data);
     }
 

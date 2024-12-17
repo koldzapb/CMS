@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use Illuminate\Http\Request;
+use App\Dto\PostSearchByCriteriaDto;
 
 interface PostServiceInterface
 {
-    public function getPosts(array $filters = [], $sort = null, $direction = 'asc', $limit = 10, $page = 1, $with = null, $commentFilter = null);
+    public function getPosts(PostSearchByCriteriaDto $dto);
     public function deletePost($id);
 }

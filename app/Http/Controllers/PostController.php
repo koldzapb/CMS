@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\PostServiceInterface;
+use App\Dto\PostSearchByCriteriaDto;
+
 
 class PostController extends Controller
 {
@@ -17,7 +19,6 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $filterable = ['id','topic','created_at','updated_at'];
-        
         $filters = [];
         foreach ($filterable as $field) {
             if ($request->has($field)) {
@@ -25,26 +26,17 @@ class PostController extends Controller
             }
         }
 
-        $sort = $request->get('sort');
-        $direction = $request->get('direction', 'asc');
-
-        $limit = $request->get('limit', 10);
-        $page = $request->get('page', 1);
-
-        $with = $request->get('with');
-
-        $commentFilter = $request->get('comment');
-
-        $data = $this->postService->getPosts(
-            $filters, 
-            $sort, 
-            $direction, 
-            $limit, 
-            $page, 
-            $with, 
-            $commentFilter
+        $dto = new PostSearchByCriteriaDto(
+            $filters,
+            $request->get('sort'),
+            $request->get('direction', 'asc'),
+            $request->get('limit', 10),
+            $request->get('page', 1),
+            $request->get('with'),
+            $request->get('comment')
         );
 
+        $data = $this->postService->getPosts($dto);
         return response()->json($data);
     }
 
