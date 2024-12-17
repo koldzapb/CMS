@@ -10,7 +10,7 @@ class Comment extends Model
     use HasFactory;
 
     public function post()
-{
-    return $this->belongsTo(\App\Models\Post::class);
-}
+    {
+        return $this->belongsTo(\App\Models\Post::class);
+    }
 }
