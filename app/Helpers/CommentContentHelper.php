@@ -14,7 +14,6 @@ class CommentContentHelper
         $length = count($words);
         $combinations = [];
 
-        // 2^length - 1 kombinacija
         for ($i = 1; $i < (1 << $length); $i++) {
             $subset = [];
             for ($j = 0; $j < $length; $j++) {
@@ -36,7 +35,8 @@ class CommentContentHelper
      */
     public static function makeAbbreviation(string $contentStr): string
     {
-        $wordsArray = explode(' ', $contentStr);
+        $content = strtolower($contentStr);
+        $wordsArray = explode(' ', $content);
         $abbr = '';
         foreach ($wordsArray as $w) {
             $abbr .= $w[0];

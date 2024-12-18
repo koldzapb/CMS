@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Comment;
 use App\Repositories\CommentRepository;
 use App\Dto\CommentSearchByCriteriaDto;
+use App\Helpers\CommentContentHelper;
 
 class CommentService implements CommentServiceInterface
 {
@@ -35,18 +36,10 @@ class CommentService implements CommentServiceInterface
 
     public function createComment(int $postId, string $content): Comment
     {
-        $content = strtolower($content);
-        $words = explode(' ', $content);
-        sort($words);
-        $abbr = '';
-        foreach ($words as $w) {
-            $abbr .= $w[0];
-        }
-
         return Comment::create([
             'post_id' => $postId,
-            'content' => implode(' ', $words),
-            'abbreviation' => $abbr
+            'content' => $content,
+            'abbreviation' => CommentContentHelper::makeAbbreviation($content)
         ]);
     }
 
