@@ -38,7 +38,7 @@ class CommentService implements CommentServiceInterface
     {
         return Comment::create([
             'post_id' => $postId,
-            'content' => $content,
+            'content' => strtolower($content),
             'abbreviation' => CommentContentHelper::makeAbbreviation($content)
         ]);
     }
